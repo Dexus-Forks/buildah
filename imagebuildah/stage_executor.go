@@ -906,8 +906,8 @@ func (s *StageExecutor) Execute(ctx context.Context, base string) (imgID string,
 		for _, flag := range step.Flags {
 			command := strings.ToUpper(step.Command)
 			// chmod, chown and from flags should have an '=' sign, '--chmod=', '--chown=' or '--from='
-			if command == "COPY" && (flag == "--chmod" || flag == "--chown" || flag == "--from") {
-				return "", nil, errors.Errorf("COPY only supports the --chmod=<permissions> --chown=<uid:gid> and the --from=<image|stage> flags")
+			if command == "COPY" && (flag == "--chmod" || flag == "--chown" || flag == "--from" || flag == "--keep-ownership") {
+				return "", nil, errors.Errorf("COPY only supports the --keep-ownership=<boolean> --chmod=<permissions> --chown=<uid:gid> and the --from=<image|stage> flags")
 			}
 			if command == "ADD" && (flag == "--chmod" || flag == "--chown") {
 				return "", nil, errors.Errorf("ADD only supports the --chmod=<permissions> and the --chown=<uid:gid> flags")

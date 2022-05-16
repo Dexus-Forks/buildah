@@ -1885,6 +1885,12 @@ function _test_http() {
   expect_output --substring "COPY --from=build: no stage or image found with that name"
 }
 
+@test "bud with copy-from referencing the current stage and keep ownership" {
+  _prefetch busybox
+  target=busybox-derived
+  run_buildah build $WITH_POLICY_JSON -t ${target} -f $BUDFILES/copy-from-keep-ownership/Dockerfile $BUDFILES/copy-from-keep-ownership
+}
+
 @test "bud-target" {
   _prefetch alpine ubuntu
   target=target
