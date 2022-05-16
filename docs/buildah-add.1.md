@@ -23,6 +23,10 @@ Defaults to false.
 Note: You can also override the default value of --add-history by setting the
 BUILDAH\_HISTORY environment variable. `export BUILDAH_HISTORY=true`
 
+**--keep-ownership**
+
+preserve user and group ownership of source content (only for local files).
+
 **--chmod** *permissions*
 
 Sets the access permissions of the destination content. Accepts the numerical format.
