@@ -978,6 +978,15 @@ function _test_http() {
   run_buildah from ${target}
 }
 
+@test "bud-github-context-with-branch-and-subdir" {
+  target=github-image
+  gitrepo=https://github.com/containers/podman.git#main:contrib/hello
+  run_buildah build $WITH_POLICY_JSON -t ${target} "${gitrepo}"
+  # check syntax only for subdirectory
+  gitrepo=https://github.com/containers/podman.git#:contrib/hello
+  run_buildah build $WITH_POLICY_JSON -t ${target} "${gitrepo}"
+}
+
 @test "bud-additional-tags" {
   target=scratch-image
   target2=another-scratch-image
@@ -2394,6 +2403,18 @@ _EOF
   [ "${status}" -eq 0 ]
   expect_output --substring "FROM alpine"
   expect_output --substring "success"
+  expect_output --substring "debug=no"
+  run_buildah build $WITH_POLICY_JSON -t ${target} --cpp-flag "-DDEBUG" -f $BUDFILES/containerfile/Containerfile.in $BUDFILES/containerfile
+  [ "${status}" -eq 0 ]
+  expect_output --substring "FROM alpine"
+  expect_output --substring "success"
+  expect_output --substring "debug=yes"
+
+  BUILDAH_CPPFLAGS="-DDEBUG" run_buildah build $WITH_POLICY_JSON -t ${target} -f $BUDFILES/containerfile/Containerfile.in $BUDFILES/containerfile
+  [ "${status}" -eq 0 ]
+  expect_output --substring "FROM alpine"
+  expect_output --substring "success"
+  expect_output --substring "debug=yes"
 }
 
 @test "bud with Dockerfile" {

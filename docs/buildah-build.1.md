@@ -24,7 +24,7 @@ When the URL is an archive, the contents of the URL is downloaded to a temporary
 
 When the URL is a Containerfile, the file is downloaded to a temporary location.
 
-When a Git repository is set as the URL, the repository is cloned locally and then set as the context.
+When a Git repository is set as the URL, the repository is cloned locally and then used as the build context.  A non-default branch and subdirectory of the cloned git repository can be used by including their names at the end of the URL in the form `myrepo.git#mybranch:subdir`, or `myrepo.git#:subdir` if the subdirectory should be used from the default branch.
 
 ## OPTIONS
 
@@ -113,6 +113,13 @@ that the cgroup namespace in which `buildah` itself is being run should be reuse
 This option is added to be aligned with other containers CLIs.
 Buildah doesn't send a copy of the context directory to a daemon or a remote server.
 Thus, compressing the data before sending it is irrelevant to Buildah.
+
+**--cpp-flag**=""
+
+Set additional flags to pass to the C Preprocessor cpp(1).
+Containerfiles ending with a ".in" suffix will be preprocessed via cpp(1). This option can be used to pass additional flags to cpp.
+Note: You can also set default CPPFLAGS by setting the BUILDAH\_CPPFLAGS
+environment variable (e.g., `export BUILDAH_CPPFLAGS="-DDEBUG"`).
 
 **--cpu-period**=*0*
 
@@ -853,7 +860,7 @@ buildah build --no-cache --rm=false -t imageName .
 
 buildah build --dns-search=example.com --dns=223.5.5.5 --dns-option=use-vc .
 
-buildah build -f Containerfile.in -t imageName .
+buildah build -f Containerfile.in --cpp-flag="-DDEBUG" -t imageName .
 
 buildah build --network mynet .
 
