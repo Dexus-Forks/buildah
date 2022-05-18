@@ -1624,11 +1624,16 @@ function _test_http() {
 }
 
 @test "bud with ADD from workdir and with --keep-ownership" {
+  skip_if_rootless
+
   _prefetch busybox
   target=busybox-derived
-  chown 321:999 $BUDFILES/copy-from-keep-ownership/file3.txt
-  run_buildah build $WITH_POLICY_JSON -t ${target} -f $BUDFILES/copy-from-keep-ownership/Dockerfile3 $BUDFILES/copy-from-keep-ownership
-  expect_output --substring "\-rw-r--r--    1 321      999"
+  mytmpdir=${TEST_SCRATCH_DIR}/keep-ownership
+  mkdir -p "${mytmpdir}"
+  touch "${mytmpdir}/file3.txt"
+  chown 321:998 "${mytmpdir}/file3.txt"
+  run_buildah build $WITH_POLICY_JSON -t ${target} -f $BUDFILES/copy-from-keep-ownership/Dockerfile3 "${mytmpdir}"
+  expect_output "321:998"
 }
 
 @test "bud with ADD file construct" {
@@ -1906,15 +1911,20 @@ function _test_http() {
   _prefetch busybox
   target=busybox-derived
   run_buildah build $WITH_POLICY_JSON -t ${target} -f $BUDFILES/copy-from-keep-ownership/Dockerfile $BUDFILES/copy-from-keep-ownership
-  expect_output --substring "\-rw-r--r--    1 123      456"
+  expect_output "123:456"
 }
 
 @test "bud with copy-workdir and with --keep-ownership" {
+  skip_if_rootless
+
   _prefetch busybox
   target=busybox-derived
-  chown 321:999 $BUDFILES/copy-from-keep-ownership/file2.txt
-  run_buildah build $WITH_POLICY_JSON -t ${target} -f $BUDFILES/copy-from-keep-ownership/Dockerfile2 $BUDFILES/copy-from-keep-ownership
-  expect_output --substring "\-rw-r--r--    1 321      999"
+  mytmpdir=${TEST_SCRATCH_DIR}/keep-ownership
+  mkdir -p "${mytmpdir}"
+  touch "${mytmpdir}/file2.txt"
+  chown 321:999 "${mytmpdir}/file2.txt"
+  run_buildah build $WITH_POLICY_JSON -t ${target} -f $BUDFILES/copy-from-keep-ownership/Dockerfile2 "${mytmpdir}"
+  expect_output "321:999"
 }
 
 @test "bud-target" {
